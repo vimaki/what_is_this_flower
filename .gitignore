@@ -1,0 +1,4 @@
+.idea
+scraping_dataset/__pycache__
+scraping_dataset/dataset
+venv
