@@ -31,7 +31,7 @@ from fake_useragent import UserAgent
 from pathlib import Path
 from typing import List
 
-import image_scraper
+from . import image_scraper
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 logger = logging.getLogger()
