@@ -40,7 +40,7 @@ def show_dataset_examples(dataset: MyDataset, n_samples: int = 16) -> None:
         imshow_tensor(image.data.cpu(), title=img_label, plt_ax=fig_x)
 
 
-def show_images_with_predictions(dataset: MyDataset, predictions: np.ndarry,
+def show_images_with_predictions(dataset: MyDataset, predictions: np.ndarray,
                                  n_samples=9) -> None:
     n_rows = ceil(n_samples / 3)
     if n_rows == 1:
