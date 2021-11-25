@@ -65,7 +65,7 @@ def plot_confusion_matrix(conf_mat: np.ndarray, classes: List[str],
 
 
 def show_confusion_matrix_func(data: MyDataset, predictions: np.ndarray,
-                               plot: bool = True) -> Tuple[List[int], np.ndarray[int]]:
+                               plot: bool = True) -> Tuple[List[int], np.ndarray]:
     """Display the distribution of accuracy by class as a confusion matrix"""
     class_names = sorted(set(data.labels))
 
