@@ -109,7 +109,7 @@ class ClassDistribution(list):
         return '\n'.join(representation)
 
 
-def upload_dataset(data_directory: str, balance: Optional[int]) \
+def upload_dataset(data_directory: str, balance: Optional[int] = None) \
         -> Tuple[MyDataset, MyDataset, MyDataset]:
     dataset_directory = Path(data_directory)
     dataset_files = sorted(list(dataset_directory.rglob('*.jpg')))
