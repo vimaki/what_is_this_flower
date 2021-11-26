@@ -16,15 +16,15 @@ class MyDataset(Dataset):
     """Dataset with images loaded from files"""
 
     def __init__(self, files: List[Path], mode: str,
-                 inception_net: bool = False) -> None:
+                 rescale_size: int = 224) -> None:
         super().__init__()
         self.files = sorted(files)
         self.mode = mode
-        self.inception_net = inception_net
+        self.rescale_size = rescale_size
 
         data_modes = ['train', 'val', 'test']
         if self.mode not in data_modes:
-            print('{} is not correct; correct modes: {}'.format(self.mode, data_modes))
+            print(f'{self.mode} is not correct; correct modes: {data_modes}')
             raise NameError
 
         self.len_ = len(self.files)
@@ -50,10 +50,9 @@ class MyDataset(Dataset):
     def __getitem__(self, index: int) -> Tuple[Tensor, int]:
         """Convert image to the format required for Pytorch"""
         # для преобразования изображений в тензоры PyTorch и нормализации входа
-        rescale_size = 224 if not self.inception_net else 299
         if self.mode != 'test':
             transform = transforms.Compose([
-                transforms.Resize((rescale_size, rescale_size)),
+                transforms.Resize((self.rescale_size, self.rescale_size)),
                 # transforms.ToPILImage(),
                 transforms.RandomRotation(20),
                 transforms.RandomHorizontalFlip(),
@@ -65,7 +64,7 @@ class MyDataset(Dataset):
             ])
         else:
             transform = transforms.Compose([
-                transforms.Resize((rescale_size, rescale_size)),
+                transforms.Resize((self.rescale_size, self.rescale_size)),
                 transforms.ToTensor(),
                 transforms.Normalize([0.485, 0.456, 0.406],
                                      [0.229, 0.224, 0.225])
