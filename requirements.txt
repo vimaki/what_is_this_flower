@@ -1,7 +1,7 @@
 fake-useragent==0.1.11
 matplotlib==3.4.3
 numpy==1.21.2
-Pillow==8.4.0
+Pillow==7.1.2
 selenium==3.141.0
 scikit-learn==1.0
 requests==2.24.0
