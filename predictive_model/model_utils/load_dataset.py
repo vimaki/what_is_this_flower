@@ -43,7 +43,7 @@ class MyDataset(Dataset):
 
     @staticmethod
     def load_sample(file: Path) -> PyAccess:
-        image = Image.open(file)
+        image = Image.open(file).convert('RGB')
         image.load()
         return image
 
