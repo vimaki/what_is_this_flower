@@ -22,7 +22,7 @@ def predict(model, data: MyDataset, on_gpu: bool = True,
             model.eval()
 
             if do_tta:
-                logits_tta = np.ones((1, model.modules[-1].out_features))  # n_classes))
+                logits_tta = np.ones((1, list(model.modules())[-1].out_features))
                 for transformer in tta.aliases.d4_transform():
                     image_tta = transformer.augment_image(inputs)
                     outputs_tta = model(image_tta).cpu()
@@ -31,10 +31,10 @@ def predict(model, data: MyDataset, on_gpu: bool = True,
                 outputs = torch.from_numpy(outputs)
             else:
                 outputs = model(inputs).cpu()
-            logits = torch.nn.functional.softmax(outputs, dim=1).data.numpy()
+            logits = torch.nn.functional.softmax(outputs, dim=0).data.numpy()
             test_predictions.append(logits)
 
-    probs = np.concatenate(test_predictions)
+    probs = np.array(test_predictions)
     return probs
 
 
