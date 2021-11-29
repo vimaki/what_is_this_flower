@@ -73,7 +73,7 @@ def show_confusion_matrix_func(data: MyDataset, predictions: np.ndarray,
     y_ground_truth = [sample[1] for sample in data]
 
     conf_mat = confusion_matrix(y_ground_truth, y_pred,
-                                np.arange(len(class_names)))
+                                labels=np.arange(len(class_names)))
     if plot:
         plot_confusion_matrix(conf_mat, class_names, normalize=True)
 
