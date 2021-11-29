@@ -74,10 +74,10 @@ def eval_epoch(model, val_loader: DataLoader, loss_func, epoch: int,
             'acc': val_acc,
             'epoch': epoch,
         }
-        if not os.path.isdir('./gdrive/My Drive/dog_breed/checkpoint'):
-            os.mkdir('./gdrive/My Drive/dog_breed/checkpoint')
+        if not os.path.isdir('./gdrive/My Drive/flowers/checkpoint'):
+            os.mkdir('./gdrive/My Drive/flowers/checkpoint')
         torch.save(state,
-                   f'./gdrive/My Drive/dog_breed/checkpoint/ckpt_{model_name}.pth')
+                   f'./gdrive/My Drive/flowers/checkpoint/ckpt_{model_name}.pth')
 
     return val_loss, val_acc
 
