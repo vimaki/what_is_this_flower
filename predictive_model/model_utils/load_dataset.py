@@ -108,7 +108,8 @@ class ClassDistribution(list):
         return '\n'.join(representation)
 
 
-def upload_dataset(data_directory: str, balance: Optional[int] = None) \
+def upload_dataset(data_directory: str, random_state: int,
+                   balance: Optional[int] = None) \
         -> Tuple[MyDataset, MyDataset, MyDataset]:
     dataset_directory = Path(data_directory)
     dataset_files = sorted(list(dataset_directory.rglob('*.jpg')))
@@ -116,13 +117,15 @@ def upload_dataset(data_directory: str, balance: Optional[int] = None) \
     # extraction of a test sample from a dataset
     train_test_labels = [path.parent.name for path in dataset_files]
     train_files, test_files = train_test_split(
-        dataset_files, test_size=0.25, stratify=train_test_labels, random_state=0
+        dataset_files, test_size=0.25,
+        stratify=train_test_labels, random_state=random_state
     )
 
     # extraction of a validation sample from a train data
-    train_val_labels = [path.parent.name for path in train_files]  # ??? нужно ли ???
+    train_val_labels = [path.parent.name for path in train_files]
     train_files, val_files = train_test_split(
-        train_files, test_size=0.25, stratify=train_val_labels, random_state=0
+        train_files, test_size=0.25,
+        stratify=train_val_labels, random_state=random_state
     )
 
     if balance:
