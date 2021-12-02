@@ -100,4 +100,4 @@ def show_accuracy_for_each_class(data: MyDataset, predictions: np.ndarray) -> No
     for i in range(len(class_names)):
         percentage = ((100 * class_correct[i] / class_total[i])
                       if class_total[i] != 0 else -1)
-        print(f'Accuracy of {class_names[i]:<{max_class_name_length}} {percentage:>3}%')
+        print(f'Accuracy of {class_names[i]:<{max_class_name_length}} {percentage:>5.1f}%')
