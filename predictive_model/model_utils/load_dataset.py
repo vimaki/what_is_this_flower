@@ -42,10 +42,24 @@ class MyDataset(Dataset):
         return self.len_
 
     @staticmethod
-    def load_sample(file: Path) -> PyAccess:
+    def load_sample(file: Path) -> Image:
         image = Image.open(file).convert('RGB')
         image.load()
         return image
+
+    @staticmethod
+    def crop_image(image: Image) -> Image:
+        crop_size = int(min(image.size) * 0.95)
+        width, height = image.size
+
+        left = (width - crop_size) / 2
+        top = (height - crop_size) / 2
+        right = (width + crop_size) / 2
+        bottom = (height + crop_size) / 2
+
+        image = image.crop((left, top, right, bottom))
+        return image
+
 
     def __getitem__(self, index: int) -> Tuple[Tensor, int]:
         """Convert image to the format required for Pytorch"""
@@ -72,6 +86,7 @@ class MyDataset(Dataset):
         x = self.load_sample(self.files[index])
         # x = self._prepare_sample(x)
         # x = np.array(x / 255, dtype='float32')
+        x = self.crop_image(x)
         x = transform(x)
         label = self.labels[index]
         label_id = self.label_encoder.transform([label])
