@@ -1,3 +1,24 @@
+"""Neural network training.
+
+Changing the parameters of an artificial neural network based on the
+data transmitted to it.
+
+Functions
+---------
+fit_epoch
+    Passing an epoch in train mode.
+eval_epoch
+    Passing an epoch in evaluate mode.
+train
+    Neural network training.
+
+References
+----------
+load_dataset.py
+    A module that overrides the Dataset class called MyDataset that
+    stores images and their labels.
+"""
+
 import os
 import torch
 from torch.utils.data import DataLoader
@@ -9,7 +30,40 @@ from .load_dataset import MyDataset
 
 def fit_epoch(model, train_loader: DataLoader, loss_func, optimizer,
               on_gpu: bool = True) -> Tuple[float, float]:
-    """Passing an epoch in train mode"""
+    """Passing an epoch in train mode.
+
+    This function transmits a batch of data for training to the input
+    of the artificial neural network, receives predictions and calculates
+    the value of the loss function. Then, based on the derivatives
+    of the loss function over all network weights, a gradient descent
+    step is made. The described steps are repeated for all batches of data.
+    Loss function and accuracy values for the entire epoch are also stored.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        A model that is a specific architecture of an artificial neural
+        network that runs in the Pytorch framework.
+    train_loader : DataLoader
+        An object that contains images and their labels for training
+        the model and outputs data in certain batches.
+    loss_func : torch.nn.Module
+        A function whose values indicate how well the model predicts.
+    optimizer: torch.optim.Optimizer
+        An algorithm that alters the operation of gradient descent
+        to speed up the convergence to a minimum of the loss function.
+    on_gpu : bool, optional
+        Flag that determines whether calculations will be performed
+        on a GPU or on a CPU (default is True, i.e. on a GPU).
+
+    Returns
+    -------
+    tuple(float, float)
+        A tuple of length 2, which contains the value of the loss
+        function and the accuracy calculated for the entire epoch
+        and on the training data.
+    """
+
     if on_gpu:
         device = torch.device('cuda')
     else:
@@ -41,7 +95,48 @@ def fit_epoch(model, train_loader: DataLoader, loss_func, optimizer,
 def eval_epoch(model, val_loader: DataLoader, loss_func, epoch: int,
                best_acc: float, model_name: str, on_gpu: bool = True)\
         -> Tuple[float, float]:
-    """Passing an epoch in evaluate mode"""
+    """Passing an epoch in evaluate mode.
+
+    This function transmits a batch of data for validating to the input
+    of the artificial neural network, receives predictions and calculates
+    the value of the loss function. Thus, we evaluate the quality
+    of the model on data that were not involved in setting the weights
+    of the network, so we get a more plausible estimate. The described
+    steps are repeated for all batches of data. Loss function and
+    accuracy values for the entire epoch are also stored.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        A model that is a specific architecture of an artificial neural
+        network that runs in the Pytorch framework.
+    val_loader : DataLoader
+        An object that contains images and their labels for validating
+        the model and outputs data in certain batches.
+    loss_func : torch.nn.Module
+        A function whose values indicate how well the model predicts.
+    epoch: int
+        The current epoch number, i.e. iteration number of the algorithm
+        passing through all data.
+    best_acc : float
+        Best accuracy obtained in previous epochs. It is necessary to
+        save the checkpoint of the model if the accuracy at this epoch
+        is better than the passed value.
+    model_name : str
+        The name of the model type to form the file name of the saved
+        checkpoint.
+    on_gpu : bool, optional
+        Flag that determines whether calculations will be performed
+        on a GPU or on a CPU (default is True, i.e. on a GPU).
+
+    Returns
+    -------
+    tuple(float, float)
+        A tuple of length 2, which contains the value of the loss
+        function and the accuracy calculated for the entire epoch
+        and on the validating data.
+    """
+
     if on_gpu:
         device = torch.device('cuda')
     else:
@@ -83,9 +178,57 @@ def eval_epoch(model, val_loader: DataLoader, loss_func, epoch: int,
 
 
 def train(train_files: MyDataset, val_files: MyDataset, model, loss_func,
-          optimizer, scheduler, epochs: int, batch_size: int, model_name: str) \
-        -> List[Tuple[float, float, float, float]]:
-    """Neural network training"""
+          optimizer, scheduler, epochs: int, batch_size: int, model_name: str,
+          on_gpu: bool = True) -> List[Tuple[float, float, float, float]]:
+    """Neural network training.
+
+    This function starts a two-stage loop consisting of training
+    the artificial neural network by changing the coefficients
+    of the model based on the transmitted data and then checking
+    the quality of the model. At each iteration, network performance
+    indicators are saved.
+
+    Parameters
+    ----------
+    train_files: MyDataset
+        An object that contains images and their labels for training
+        the model.
+    val_files: MyDataset
+        An object that contains images and their labels for validating
+        the model.
+    model : torch.nn.Module
+        A model that is a specific architecture of an artificial neural
+        network that runs in the Pytorch framework.
+    loss_func : torch.nn.Module
+        A function whose values indicate how well the model predicts.
+    optimizer: torch.optim.Optimizer
+        An algorithm that alters the operation of gradient descent
+        to speed up the convergence to a minimum of the loss function.
+    scheduler : torch.optim.lr_scheduler._LRScheduler
+        An algorithm to adjust the learning rate based on the number
+        of epochs. This makes it possible to more accurately search
+        for the minimum of the loss function.
+    epochs: int
+        The number of iterations that the algorithm goes through all
+        the data.
+    batch_size : int
+        The size of the portions of images that will be simultaneously
+        processed by the model.
+    model_name : str
+        The name of the model type to form the file name of the saved
+        checkpoint.
+    on_gpu : bool, optional
+        Flag that determines whether calculations will be performed
+        on a GPU or on a CPU (default is True, i.e. on a GPU).
+
+    Returns
+    -------
+    list(tuple(float, float, float, float))
+        A list of tuples of length 4, which contains the value of the
+        loss function and the accuracy calculated for each epoch on the
+        training and validating data.
+    """
+
     train_loader = DataLoader(train_files, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_files, batch_size=batch_size, shuffle=False)
 
@@ -101,12 +244,12 @@ def train(train_files: MyDataset, val_files: MyDataset, model, loss_func,
         for epoch in tqdm_notebook(range(epochs)):
             scheduler.step()
 
-            train_loss, train_acc = fit_epoch(model, train_loader,
-                                              loss_func, optimizer)
+            train_loss, train_acc = fit_epoch(model, train_loader, loss_func,
+                                              optimizer, on_gpu=on_gpu)
             print("loss", train_loss)
 
-            val_loss, val_acc = eval_epoch(model, val_loader, loss_func,
-                                           epoch, best_acc, model_name)
+            val_loss, val_acc = eval_epoch(model, val_loader, loss_func, epoch,
+                                           best_acc, model_name, on_gpu=on_gpu)
             history.append((train_loss, train_acc, val_loss, val_acc))
 
             best_acc = max(best_acc, val_acc)
