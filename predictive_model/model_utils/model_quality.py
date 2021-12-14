@@ -178,10 +178,10 @@ def show_accuracy_for_each_class(data: MyDataset, predictions: np.ndarray) -> No
     class_correct = [0 for _ in range(len(class_names))]
     class_total = [0 for _ in range(len(class_names))]
 
-    correct_answer = (y_pred == y_ground_truth).squeeze()
+    correct_answer = (y_pred.squeeze() == y_ground_truth)
     for i in range(len(y_pred)):
-        label = y_pred[i]
-        class_correct[label] += correct_answer[i].item()
+        label = y_pred[i].item()
+        class_correct[label] += correct_answer[i]
         class_total[label] += 1
 
     for i in range(len(class_names)):
