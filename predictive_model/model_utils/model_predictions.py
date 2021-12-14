@@ -104,7 +104,7 @@ def predict(model, data: MyDataset, on_gpu: bool = True,
             else:
                 outputs = model(inputs).cpu()
 
-            probs = torch.nn.functional.softmax(outputs, dim=0).data.numpy()
+            probs = torch.softmax(outputs, dim=-1).data.numpy()
             test_predictions.append(probs)
 
     probs_all = np.array(test_predictions)
@@ -157,5 +157,5 @@ def predict_one_sample(model, inputs: torch.Tensor, on_gpu: bool = True,
         else:
             outputs = model(inputs).cpu()
 
-        probs = torch.nn.functional.softmax(outputs, dim=-1).numpy()
+        probs = torch.softmax(outputs, dim=-1).numpy()
     return probs
