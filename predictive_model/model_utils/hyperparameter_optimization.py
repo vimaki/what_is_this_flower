@@ -163,7 +163,7 @@ def plot_tuning_result(study: optuna.study.Study) -> None:
 
 
 def run_tuning(objective: Callable[[optuna.trial.Trial], float],
-               seed: int = 0) -> None:
+               n_trials: int = 100, seed: int = 0) -> None:
     """Running trials for the selection of hyperparameters.
 
     A function is launched that contains parameters and has a quality
@@ -177,6 +177,9 @@ def run_tuning(objective: Callable[[optuna.trial.Trial], float],
         A function that returns a numerical value to evaluate the
         performance of the hyperparameters, and decide where to sample
         in upcoming trials.
+    n_trials : int, optional
+        The number of trials that will run with different hyperparameter
+        values.
     seed : int, optional
         The initial value of the random number generator is fixed for
         the reproducibility of the results obtained (default is 0).
@@ -188,7 +191,7 @@ def run_tuning(objective: Callable[[optuna.trial.Trial], float],
 
     study = optuna.create_study(sampler=optuna.samplers.TPESampler(seed=seed),
                                 direction='maximize')
-    study.optimize(objective, n_trials=2)
+    study.optimize(objective, n_trials=n_trials)
 
     pruned_trials = study.get_trials(deepcopy=False, states=(TrialState.PRUNED,))
     complete_trials = study.get_trials(deepcopy=False, states=(TrialState.COMPLETE,))
