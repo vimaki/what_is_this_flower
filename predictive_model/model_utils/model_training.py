@@ -23,7 +23,7 @@ import os
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm, tqdm_notebook
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 from .load_dataset import MyDataset
 
@@ -92,9 +92,10 @@ def fit_epoch(model, train_loader: DataLoader, loss_func, optimizer,
     return train_loss, train_acc
 
 
-def eval_epoch(model, val_loader: DataLoader, loss_func, epoch: int,
-               best_acc: float, model_name: str, on_gpu: bool = True)\
-        -> Tuple[float, float]:
+def eval_epoch(model, val_loader: DataLoader, loss_func, on_gpu: bool = True,
+               checkpoint: bool = True, epoch: Optional[int] = None,
+               best_acc: Optional[float] = None,
+               model_name: Optional[str] = None) -> Tuple[float, float]:
     """Passing an epoch in evaluate mode.
 
     This function transmits a batch of data for validating to the input
@@ -115,19 +116,23 @@ def eval_epoch(model, val_loader: DataLoader, loss_func, epoch: int,
         the model and outputs data in certain batches.
     loss_func : torch.nn.Module
         A function whose values indicate how well the model predicts.
-    epoch: int
-        The current epoch number, i.e. iteration number of the algorithm
-        passing through all data.
-    best_acc : float
-        Best accuracy obtained in previous epochs. It is necessary to
-        save the checkpoint of the model if the accuracy at this epoch
-        is better than the passed value.
-    model_name : str
-        The name of the model type to form the file name of the saved
-        checkpoint.
     on_gpu : bool, optional
         Flag that determines whether calculations will be performed
         on a GPU or on a CPU (default is True, i.e. on a GPU).
+    checkpoint : bool, optional
+        A flag that determines whether to save model checkpoints at
+        epochs where the best quality was achieved on validation
+        (default is True).
+    epoch: None or int
+        The current epoch number, i.e. iteration number of the algorithm
+        passing through all data.
+    best_acc : None or float
+        Best accuracy obtained in previous epochs. It is necessary to
+        save the checkpoint of the model if the accuracy at this epoch
+        is better than the passed value.
+    model_name : None or str
+        The name of the model type to form the file name of the saved
+        checkpoint.
 
     Returns
     -------
@@ -163,23 +168,25 @@ def eval_epoch(model, val_loader: DataLoader, loss_func, epoch: int,
     val_acc = running_corrects.double() / processed_size
 
     # Create checkpoints of models with the best score
-    if val_acc > best_acc:
-        state = {
-            'net': model.state_dict(),
-            'acc': val_acc,
-            'epoch': epoch,
-        }
-        if not os.path.isdir('./gdrive/My Drive/flowers/checkpoint'):
-            os.mkdir('./gdrive/My Drive/flowers/checkpoint')
-        torch.save(state,
-                   f'./gdrive/My Drive/flowers/checkpoint/ckpt_{model_name}.pth')
+    if checkpoint:
+        if val_acc > best_acc:
+            state = {
+                'net': model.state_dict(),
+                'acc': val_acc,
+                'epoch': epoch,
+            }
+            if not os.path.isdir('./gdrive/My Drive/flowers/checkpoint'):
+                os.mkdir('./gdrive/My Drive/flowers/checkpoint')
+            torch.save(state,
+                       f'./gdrive/My Drive/flowers/checkpoint/ckpt_{model_name}.pth')
 
     return val_loss, val_acc
 
 
 def train(train_files: MyDataset, val_files: MyDataset, model, loss_func,
           optimizer, scheduler, epochs: int, batch_size: int, model_name: str,
-          on_gpu: bool = True) -> List[Tuple[float, float, float, float]]:
+          on_gpu: bool = True, checkpoint: bool = True) \
+        -> List[Tuple[float, float, float, float]]:
     """Neural network training.
 
     This function starts a two-stage loop consisting of training
@@ -220,6 +227,10 @@ def train(train_files: MyDataset, val_files: MyDataset, model, loss_func,
     on_gpu : bool, optional
         Flag that determines whether calculations will be performed
         on a GPU or on a CPU (default is True, i.e. on a GPU).
+    checkpoint : bool, optional
+        A flag that determines whether to save model checkpoints at
+        epochs where the best quality was achieved on validation
+        (default is True).
 
     Returns
     -------
@@ -248,8 +259,9 @@ def train(train_files: MyDataset, val_files: MyDataset, model, loss_func,
                                               optimizer, on_gpu=on_gpu)
             print("loss", train_loss)
 
-            val_loss, val_acc = eval_epoch(model, val_loader, loss_func, epoch,
-                                           best_acc, model_name, on_gpu=on_gpu)
+            val_loss, val_acc = eval_epoch(model, val_loader, loss_func,
+                                           on_gpu, checkpoint, epoch,
+                                           best_acc, model_name)
             history.append((train_loss, train_acc, val_loss, val_acc))
 
             best_acc = max(best_acc, val_acc)
