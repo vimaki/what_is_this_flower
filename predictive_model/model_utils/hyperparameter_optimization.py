@@ -1,4 +1,4 @@
-"""Helper functions for training artificial neural networks.
+"""Helper functions for the selection of hyperparameters of neural networks.
 
 Functions
 ---------
