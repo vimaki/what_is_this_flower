@@ -6,6 +6,10 @@ find_init_lr
     Iterating over different values of the step of gradient descent.
 plot_lr_loss
     Plot the values of the loss function versus the gradient descent step.
+plot_tuning_result
+    Plot the history of the selection of hyperparameters.
+run_tuning
+    Running trials for the selection of hyperparameters.
 
 References
 ----------
@@ -14,9 +18,13 @@ load_dataset.py
     stores images and their labels.
 """
 
+from typing import Callable
+
 import matplotlib.pyplot as plt
 import numpy as np
+import optuna
 import torch
+from optuna.trial import TrialState
 from torch.utils.data import DataLoader
 from tqdm import tqdm_notebook
 from typing import List, Tuple
@@ -125,3 +133,78 @@ def plot_lr_loss(logs_lr: List[float], losses: List[float]) -> None:
     ax.plot(logs_lr, losses)
     ax.set_xlabel('lr, $10^x$')
     ax.set_ylabel('loss')
+
+
+def plot_tuning_result(study: optuna.study.Study) -> None:
+    """Plot the history of the selection of hyperparameters."""
+    # Visualize the learning curves of the trials
+    fig1 = optuna.visualization.plot_intermediate_values(study)
+    # Visualize combinations of hyperparameters for all trials with
+    # display of the objective value
+    fig2 = optuna.visualization.plot_parallel_coordinate(study)
+    # The projection onto the surface plane of the objective value
+    # depending on all pairs of parameters
+    fig3 = optuna.visualization.plot_contour(study)
+    # Visualize parameter importances
+    fig4 = optuna.visualization.plot_param_importances(study)
+    # Visualize which hyperparameters are affecting the trial duration
+    # with hyperparameter importance
+    fig5 = optuna.visualization.plot_param_importances(
+        study,
+        target=lambda t: t.duration.total_seconds(),
+        target_name='duration'
+    )
+
+    fig1.show()
+    fig2.show()
+    fig3.show()
+    fig4.show()
+    fig5.show()
+
+
+def run_tuning(objective: Callable[[optuna.trial.Trial], float],
+               seed: int = 0) -> None:
+    """Running trials for the selection of hyperparameters.
+
+    A function is launched that contains parameters and has a quality
+    assessment metric. A kind of Bayesian search by parameters is
+    carried out, in the space described in the function itself.
+    At the end, statistics for all trials are displayed.
+
+    Parameters
+    ----------
+    objective : function
+        A function that returns a numerical value to evaluate the
+        performance of the hyperparameters, and decide where to sample
+        in upcoming trials.
+    seed : int, optional
+        The initial value of the random number generator is fixed for
+        the reproducibility of the results obtained (default is 0).
+
+    Returns
+    -------
+    None
+    """
+
+    study = optuna.create_study(sampler=optuna.samplers.TPESampler(seed=seed),
+                                direction='maximize')
+    study.optimize(objective, n_trials=2)
+
+    pruned_trials = study.get_trials(deepcopy=False, states=(TrialState.PRUNED,))
+    complete_trials = study.get_trials(deepcopy=False, states=(TrialState.COMPLETE,))
+
+    print('Study statistics: ')
+    print('  Number of finished trials: ', len(study.trials))
+    print('  Number of pruned trials: ', len(pruned_trials))
+    print('  Number of complete trials: ', len(complete_trials))
+
+    print('Best trial:')
+    trial = study.best_trial
+
+    print('  Value: ', trial.value)
+
+    print('  Params: ')
+    for key, value in trial.params.items():
+        print(f'    {key}: {value}')
+
+    plot_tuning_result(study)
