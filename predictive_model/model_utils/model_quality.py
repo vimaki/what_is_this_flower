@@ -23,6 +23,7 @@ load_dataset.py
 import itertools
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from sklearn.metrics import f1_score
 from sklearn.metrics import confusion_matrix
 from typing import List, Tuple
@@ -152,7 +153,8 @@ def show_confusion_matrix_func(data: MyDataset, predictions: np.ndarray,
     return y_ground_truth, y_pred
 
 
-def show_accuracy_for_each_class(data: MyDataset, predictions: np.ndarray) -> None:
+def show_accuracy_for_each_class(data: MyDataset, predictions: np.ndarray,
+                                 plot_hist: bool = False) -> None:
     """Display accuracy for each class.
 
     Parameters
@@ -163,6 +165,9 @@ def show_accuracy_for_each_class(data: MyDataset, predictions: np.ndarray) -> No
         Model predictions for passed data. A numpy array containing an
         arrays of floats that match the model's confidence in assigning
         each of the classes to the image.
+    plot_hist : bool
+        A flag that determines whether to build a prediction quality
+        diagram (default is False).
 
     Returns
     -------
@@ -184,7 +189,16 @@ def show_accuracy_for_each_class(data: MyDataset, predictions: np.ndarray) -> No
         class_correct[label] += correct_answer[i]
         class_total[label] += 1
 
+    class_accuracy_mapping = {}
     for i in range(len(class_names)):
         percentage = ((100 * class_correct[i] / class_total[i])
                       if class_total[i] != 0 else -1)
-        print(f'Accuracy of {class_names[i]:<{max_class_name_length}} {percentage:>5.1f}%')
+        class_accuracy_mapping[class_names[i]] = percentage
+
+    for cls, percentage in class_accuracy_mapping.items():
+        print(f'Accuracy of {cls:<{max_class_name_length}} {percentage:>5.1f}%')
+
+    if plot_hist:
+        classes = list(class_accuracy_mapping.keys())
+        class_size = [class_accuracy_mapping[cls] for cls in classes]
+        sns.barplot(x=classes, y=class_size)
