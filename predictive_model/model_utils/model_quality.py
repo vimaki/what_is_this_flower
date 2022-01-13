@@ -201,4 +201,5 @@ def show_accuracy_for_each_class(data: MyDataset, predictions: np.ndarray,
     if plot_hist:
         classes = list(class_accuracy_mapping.keys())
         class_size = [class_accuracy_mapping[cls] for cls in classes]
-        sns.barplot(x=classes, y=class_size)
+        plt.figure(figsize=(8, 15))
+        sns.barplot(x=class_size, y=classes)
