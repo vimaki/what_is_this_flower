@@ -96,8 +96,8 @@ class MyDataset(Dataset):
             self.labels = [path.parent.name for path in self.files]
             self.label_encoder.fit(self.labels)
 
-            labels_mapping = dict(zip(self.label_encoder.classes_,
-                                      range(len(self.label_encoder.classes_))))
+            labels_mapping = dict(zip(range(len(self.label_encoder.classes_)),
+                                      self.label_encoder.classes_))
 
             with open('label_encoder.json', 'w') as label_encoder_dump_file:
                 json.dump(labels_mapping, label_encoder_dump_file)
