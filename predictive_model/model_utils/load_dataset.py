@@ -19,6 +19,7 @@ oversampling
 
 from __future__ import annotations
 import json
+import pickle
 from collections import Counter, defaultdict
 from itertools import cycle, islice
 from pathlib import Path
@@ -90,17 +91,24 @@ class MyDataset(Dataset):
 
         self.len_ = len(self.files)
 
+        self.labels = [path.parent.name for path in self.files]
         self.label_encoder = LabelEncoder()
 
-        if self.mode != 'test':  # мной было исправлено на True
-            self.labels = [path.parent.name for path in self.files]
+        if self.mode == 'train':
             self.label_encoder.fit(self.labels)
 
             labels_mapping = dict(zip(range(len(self.label_encoder.classes_)),
                                       self.label_encoder.classes_))
 
-            with open('label_encoder.json', 'w') as label_encoder_dump_file:
-                json.dump(labels_mapping, label_encoder_dump_file)
+            with open('label_encoder.json', 'w') as label_encoder_json_dump_file:
+                json.dump(labels_mapping, label_encoder_json_dump_file)
+
+            with open('label_encoder.pkl', 'wb') as label_encoder_pickle_dump_file:
+                pickle.dump(self.label_encoder, label_encoder_pickle_dump_file)
+
+        else:
+            with open('label_encoder.pkl', 'rb') as label_encoder_pickle_dump_file:
+                self.label_encoder = pickle.load(label_encoder_pickle_dump_file)
 
     def __len__(self):
         """The number of images in the dataset."""
