@@ -1,4 +1,5 @@
 .idea
 scraping_dataset/__pycache__
 scraping_dataset/dataset
+predictive_model/model_utils/__pycache__
 venv
