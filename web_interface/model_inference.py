@@ -1,12 +1,13 @@
 import json
 import sys
+from typing import Tuple
 
-from torch import device, load
+from torch import device, load, Tensor
 from torch.nn import Linear
 from torchvision import models
 from torchvision import transforms
 
-sys.path.insert(1,'../predictive_model/model_utils')
+sys.path.insert(1, '../predictive_model/model_utils')
 
 from load_dataset import MyDataset
 
@@ -26,7 +27,8 @@ model.load_state_dict(load(PATH_TO_MODEL, map_location=device('cpu'))['model_sta
 model.eval()
 
 
-def transform_image(image_bytes, rescale_size=224):
+def transform_image(image_path: str, rescale_size: int = 224) -> Tensor:
+    # Set image transformations for transfer to the model input
     transform = transforms.Compose([
         transforms.Resize((rescale_size, rescale_size)),
         transforms.ToTensor(),
@@ -35,14 +37,14 @@ def transform_image(image_bytes, rescale_size=224):
     ])
 
     # image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
-    image = MyDataset.load_sample(image_bytes)
+    image = MyDataset.load_sample(image_path)
     image = MyDataset.crop_image(image)
     image = transform(image).unsqueeze(0)
     return image
 
 
-def get_inference(image_bytes):
-    image = transform_image(image_bytes)
+def get_inference(image_path: str) -> Tuple[str, str]:
+    image = transform_image(image_path)
     outputs = model.forward(image)
     _, y_hat = outputs.max(1)
     predicted_label = str(y_hat.item())
