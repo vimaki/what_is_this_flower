@@ -6,19 +6,11 @@ from flask import flash, redirect, render_template, url_for
 from . import app
 from . import model_inference
 from .forms import UploadForm
+from .utils import change_image_name
 
 UPLOAD_FOLDER = 'app/static/img/'
 
 logging.basicConfig(level=logging.INFO)
-
-
-def change_image_name(filename):
-    if filename.find('.') != -1:
-        _, extension = filename.rsplit('.', 1)
-        new_filename = f'uploaded_image.{extension.lower()}'
-        return new_filename
-    else:
-        raise ValueError('No extension in this filename')
 
 
 @app.route('/', methods=['GET', 'POST'])
