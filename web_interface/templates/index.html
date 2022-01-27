@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link type="text/css" href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet"/>
+    <meta charset="UTF-8">
+    <title>What Is This Flower?</title>
+</head>
+<body>
+<div class="header">What Is This Flower?</div>
+<h3>It determines the type of flower in the uploaded image</h3>
+
+<form method="post" action="/" enctype="multipart/form-data" class="form-upload">
+    {{ form.hidden_tag() }}
+    <div>
+        {% if form.upload_image.errors %}
+            {{ form.upload_image(class="invalid") }}
+            <span class="invalid-feedback">
+                {% for error in form.upload_image.errors %}
+                    {{ error }}
+                {% endfor %}
+            </span>
+        {% else %}
+            {{ form.upload_image(class="upload-field") }}
+            <div class="file-field">Please select some image</div>
+        {% endif %}
+    </div>
+    <div>
+        {{ form.submit(class="button") }}
+    </div>
+</form>
+
+{% for cat, msg in get_flashed_messages(True) %}
+    <div class="flash {{ cat }}">{{ msg }}</div>
+{% endfor %}
+
+{% if filename %}
+    <div>
+        <img src="{{ url_for('display_image', filename=filename) }}" alt="Uploaded image">
+    </div>
+    {% for res in result %}
+        <div class="result">
+            {{ res }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<div class="footer-basic">
+    <hr>
+    <footer>
+        <div class="row">
+            <div class="column">
+                <a href="https://github.com/vimaki/what_is_this_flower">Source code on GitHub (vimaki)</a>
+            </div>
+            <div class="column">
+                <a href="https://www.linkedin.com/in/vitalymakin/">LinkedIn: vitalymakin</a>
+            </div>
+            <div class="column">
+                <a href="mailto:makin.vitaly@gmail.com">makin.vitaly@gmail.com</a>
+            </div>
+        </div>
+    </footer>
+</div>
+</body>
+</html>
