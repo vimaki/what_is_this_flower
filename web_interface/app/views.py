@@ -1,25 +1,15 @@
 import logging
 import os
-import sys
 
-from dotenv import load_dotenv
-from flask import Flask, flash, redirect, render_template, url_for
+from flask import flash, redirect, render_template, url_for
 
-import model_inference
-from forms import UploadForm
+from . import app
+from . import model_inference
+from .forms import UploadForm
 
-UPLOAD_FOLDER = 'static/img/'
+UPLOAD_FOLDER = 'app/static/img/'
 
-# Loading environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
-else:
-    logging.warning('Invalid environment variables!')
-    sys.exit(1)
-
-app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+logging.basicConfig(level=logging.INFO)
 
 
 def change_image_name(filename):
@@ -54,17 +44,3 @@ def predict():
 @app.route('/display_image/<string:filename>')
 def display_image(filename):
     return redirect(url_for('static', filename='img/' + filename), code=301)
-
-
-if __name__ == '__main__':
-    app.run()
-
-# import model_inference
-#
-# image_path = 'flower.jpeg'
-#
-# with open(image_path, 'rb') as img:
-#     byte_im = img.read()
-#
-# res = model_inference.get_inference(byte_im)
-# print(res)

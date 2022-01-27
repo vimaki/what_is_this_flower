@@ -36,7 +36,6 @@ def transform_image(image_path: str, rescale_size: int = 224) -> Tensor:
                              [0.229, 0.224, 0.225])
     ])
 
-    # image = Image.open(io.BytesIO(image_bytes)).convert('RGB')
     image = MyDataset.load_sample(image_path)
     image = MyDataset.crop_image(image)
     image = transform(image).unsqueeze(0)
