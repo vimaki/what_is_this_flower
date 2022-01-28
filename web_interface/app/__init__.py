@@ -1,3 +1,5 @@
+"""Initialization of the WSGI application."""
+
 import logging
 import os
 import sys
@@ -15,6 +17,7 @@ else:
     logging.warning('Invalid environment variables!')
     sys.exit(1)
 
+# Create an instance of the WSGI application.
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
