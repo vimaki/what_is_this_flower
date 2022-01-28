@@ -13,7 +13,7 @@ load_dataset.py
     A module that contains functions for reading and converting images
     that are inside the class MyDataset.
 model_effnet_b5_full_weights.pth
-    File containing the weights of the trained neural network model.
+    A file containing the weights of the trained neural network model.
 label_encoder.json
     A file containing mappings predicted labels to flower names.
 flower_types.json
