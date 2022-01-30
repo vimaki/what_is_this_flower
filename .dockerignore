@@ -1,0 +1,8 @@
+.idea
+predictive_model/model_utils/__pycache__
+scraping_dataset/__pycache__
+scraping_dataset/dataset
+venv
+web_interface/__pycache__
+web_interface/app/__pycache__
+web_interface/app/static/img/*
