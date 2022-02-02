@@ -10,16 +10,20 @@ from flask import Flask
 logging.basicConfig(level=logging.INFO)
 
 # Loading environment variables
-dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
-if os.path.exists(dotenv_path):
-    load_dotenv(dotenv_path)
-else:
-    logging.warning('Invalid environment variables!')
-    sys.exit(1)
+try:
+    FLASK_SECRET_KEY = os.environ['FLASK_SECRET_KEY']
+except KeyError:
+    dotenv_path = os.path.join(os.path.dirname(__file__), '.env')
+    if os.path.exists(dotenv_path):
+        load_dotenv(dotenv_path)
+        FLASK_SECRET_KEY = os.getenv('FLASK_SECRET_KEY')
+    else:
+        logging.warning('Invalid environment variables!')
+        sys.exit(1)
 
 # Create an instance of the WSGI application.
 app = Flask(__name__)
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SECRET_KEY'] = FLASK_SECRET_KEY
 
 from .forms import *
 from .views import *
