@@ -5,6 +5,7 @@ COPY . /root
 WORKDIR /root/web_interface
 
 ENV FLASK_ENV=production
+ENV FLASK_APP=run.py
 
 ARG FLASK_SECRET_KEY
 ENV FLASK_SECRET_KEY $FLASK_SECRET_KEY
