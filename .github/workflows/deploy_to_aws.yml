@@ -45,8 +45,6 @@ jobs:
       env:
         ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         IMAGE_TAG: ${{ github.sha }}
-      with:
-        context: .
       run: |
         docker build --build-arg FLASK_SECRET_KEY="${{ secrets.FLASK_SECRET_KEY }}" \
             -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
