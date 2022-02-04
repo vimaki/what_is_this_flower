@@ -25,6 +25,8 @@ jobs:
       uses: actions/checkout@v2
       with:
         lfs: true
+
+    - name: Uploading large files
       run: git lfs pull
 
     - name: Configure AWS credentials
