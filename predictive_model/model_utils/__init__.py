@@ -2,6 +2,10 @@
 
 Modules
 -------
+hyperparameter_optimization
+    Helper functions for the selection of hyperparameters of neural networks.
+image_transformations
+    Image transformations for input to a machine learning model.
 images_visualization
     Visualizations associated with printing images.
 load_dataset
@@ -12,13 +16,12 @@ model_quality
     Checking the quality of the model.
 model_training
     Neural network training.
-hyperparameter_optimization
-    Helper functions for the selection of hyperparameters of neural networks.
 """
 
+from .hyperparameter_optimization import *
+from .image_transformations import *
 from .images_visualization import *
 from .load_dataset import *
 from .model_predictions import *
 from .model_quality import *
 from .model_training import *
-from .hyperparameter_optimization import *

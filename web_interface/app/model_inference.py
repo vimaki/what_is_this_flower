@@ -27,11 +27,10 @@ from typing import Tuple
 from torch import device, load, Tensor
 from torch.nn import Linear
 from torchvision import models
-from torchvision import transforms
 
 # Loading functions from an external package
 sys.path.insert(1, '../predictive_model/model_utils')
-from load_dataset import MyDataset
+import image_transformations
 
 PATH_TO_MODEL = '../predictive_model/model_effnet_b5_full_weights.pth'
 LABEL_ENCODER = '../predictive_model/label_encoder.json'
@@ -53,7 +52,7 @@ model.load_state_dict(load(PATH_TO_MODEL,
 model.eval()
 
 
-def transform_image(image_path: str, rescale_size: int = 224) -> Tensor:
+def transform_image(image_path: str) -> Tensor:
     """Image transformation to transfer it to the classification model.
 
     Reads images from a path in the file system. Then the image is
@@ -64,10 +63,6 @@ def transform_image(image_path: str, rescale_size: int = 224) -> Tensor:
     ----------
     image_path : str
         The path where the image is stored.
-    rescale_size : int, optional
-        The size to which the width and height of the image should be
-        reduced. Should correspond to the size of the images on which
-        the neural network was pretrained (default is 224).
 
     Returns
     -------
@@ -75,17 +70,10 @@ def transform_image(image_path: str, rescale_size: int = 224) -> Tensor:
         A three-dimensional Pytorch Tensor representing an image.
     """
 
-    # Set image transformations for transfer to the model input
-    transform = transforms.Compose([
-        transforms.Resize((rescale_size, rescale_size)),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406],
-                             [0.229, 0.224, 0.225])
-    ])
-
-    image = MyDataset.load_sample(image_path)
-    image = MyDataset.crop_image(image)
-    image = transform(image).unsqueeze(0)
+    image = image_transformations.load_sample(image_path)
+    image = image_transformations.crop_image(image)
+    image = image_transformations.image_to_tensor(
+        image, mode='test', rescale_size=224).unsqueeze(0)
     return image
 
 

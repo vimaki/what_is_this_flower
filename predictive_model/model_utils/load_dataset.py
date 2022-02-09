@@ -23,13 +23,13 @@ import pickle
 from collections import Counter, defaultdict
 from itertools import cycle, islice
 from pathlib import Path
-from PIL import Image
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from torch import Tensor
 from torch.utils.data import Dataset
-from torchvision import transforms
 from typing import List, Dict, Optional, Tuple
+
+import image_transformations
 
 
 class MyDataset(Dataset):
@@ -46,12 +46,6 @@ class MyDataset(Dataset):
         Inits an extended version of the Pytorch Dataset.
     __len__
         The number of images in the dataset.
-    load_sample
-        Loading images from a file.
-    crop_image
-        Crop images to a square shape.
-    transform_image
-        Transformation of the image for transfer to the model input.
     __getitem__
         Convert image to the format required for Pytorch.
     class_distribution
@@ -114,68 +108,6 @@ class MyDataset(Dataset):
         """The number of images in the dataset."""
         return self.len_
 
-    @staticmethod
-    def load_sample(file: Path) -> Image:
-        """Loading images from a file."""
-        image = Image.open(file).convert('RGB')
-        image.load()
-        return image
-
-    @staticmethod
-    def crop_image(image: Image) -> Image:
-        """Crop images to a square shape."""
-        crop_size = int(min(image.size) * 0.95)
-        width, height = image.size
-
-        left = (width - crop_size) / 2
-        top = (height - crop_size) / 2
-        right = (width + crop_size) / 2
-        bottom = (height + crop_size) / 2
-
-        image = image.crop((left, top, right, bottom))
-        return image
-
-    def transform_image(self, image: Image) -> Tensor:
-        """Transformation of the image for transfer to the model input.
-
-        All images are converted to tensor. Also, resizing and normalization
-        are performed, corresponding to the images on which the neural
-        network was pretrained. For images for training and validation,
-        additional augmentation is performed.
-
-        Parameters
-        ----------
-        image : Image
-            The sample image is in Pillow Image format.
-
-        Returns
-        -------
-        Tensor
-            A three-dimensional Pytorch Tensor that is a digital
-            representation of the image.
-        """
-
-        if self.mode != 'test':
-            transform = transforms.Compose([
-                transforms.Resize((self.rescale_size, self.rescale_size)),
-                transforms.RandomRotation(20),
-                transforms.RandomHorizontalFlip(),
-                transforms.RandomVerticalFlip(),
-                transforms.ColorJitter(0.2, 0, 0, 0),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406],
-                                     [0.229, 0.224, 0.225])
-            ])
-        else:
-            transform = transforms.Compose([
-                transforms.Resize((self.rescale_size, self.rescale_size)),
-                transforms.ToTensor(),
-                transforms.Normalize([0.485, 0.456, 0.406],
-                                     [0.229, 0.224, 0.225])
-            ])
-
-        return transform(image)
-
     def __getitem__(self, index: int) -> Tuple[Tensor, int]:
         """Convert image to the format required for Pytorch.
 
@@ -196,9 +128,10 @@ class MyDataset(Dataset):
             Tensor representing an image and a corresponding class label.
         """
 
-        x = self.load_sample(self.files[index])
-        x = self.crop_image(x)
-        x = self.transform_image(x)
+        x = image_transformations.load_sample(self.files[index])
+        x = image_transformations.crop_image(x)
+        x = image_transformations.image_to_tensor(
+            x, mode=self.mode, rescale_size=self.rescale_size)
         label = self.labels[index]
         label_id = self.label_encoder.transform([label])
         y = label_id.item()
