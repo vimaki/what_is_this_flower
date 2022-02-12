@@ -29,7 +29,7 @@ from torch import Tensor
 from torch.utils.data import Dataset
 from typing import List, Dict, Optional, Tuple
 
-import image_transformations
+from . import image_transformations
 
 
 class MyDataset(Dataset):
