@@ -1,1 +1,1 @@
-predictive_model/model_effnet_b5_full_weights.pth filter=lfs diff=lfs merge=lfs -text
+predictive_model/model_weights.pth filter=lfs diff=lfs merge=lfs -text

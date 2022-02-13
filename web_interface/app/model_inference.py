@@ -12,7 +12,7 @@ References
 load_dataset.py
     A module that contains functions for reading and converting images
     that are inside the class MyDataset.
-model_effnet_b5_full_weights.pth
+model_weights.pth
     A file containing the weights of the trained neural network model.
 label_encoder.json
     A file containing mappings predicted labels to flower names.
@@ -32,7 +32,7 @@ from torchvision import models
 sys.path.insert(1, '../predictive_model/model_utils')
 import image_transformations
 
-PATH_TO_MODEL = '../predictive_model/model_effnet_b5_full_weights.pth'
+PATH_TO_MODEL = '../predictive_model/model_weights.pth'
 LABEL_ENCODER = '../predictive_model/label_encoder.json'
 FLOWER_DICTIONARY = '../scraping_dataset/flower_types.json'
 
@@ -47,8 +47,7 @@ with open(FLOWER_DICTIONARY) as f:
 # Loading the classification model
 model = models.efficientnet_b5()
 model.classifier[1] = Linear(model.classifier[1].in_features, len(flower_dict))
-model.load_state_dict(load(PATH_TO_MODEL,
-                           map_location=device('cpu'))['model_state_dict'])
+model.load_state_dict(load(PATH_TO_MODEL, map_location=device('cpu')))
 model.eval()
 
 
