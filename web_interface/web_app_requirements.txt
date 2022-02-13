@@ -1,0 +1,9 @@
+fake-useragent==0.1.11
+Flask==2.0.2
+Flask-WTF==1.0.0
+gunicorn==20.1.0
+Pillow==7.1.2
+python-dotenv==0.19.2
+torch==1.10.2
+torchvision==0.11.3
+WTForms==3.0.1
