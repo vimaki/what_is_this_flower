@@ -26,7 +26,7 @@
       "secrets": null,
       "dockerSecurityOptions": null,
       "memory": null,
-      "memoryReservation": 128,
+      "memoryReservation": 512,
       "volumesFrom": [],
       "stopTimeout": null,
       "image": "073109465421.dkr.ecr.eu-north-1.amazonaws.com/flower-classifier-ecr",
@@ -56,7 +56,7 @@
     "EXTERNAL",
     "EC2"
   ],
-  "taskDefinitionArn": "arn:aws:ecs:eu-north-1:073109465421:task-definition/flower-classifier-task-definition:1",
+  "taskDefinitionArn": "arn:aws:ecs:eu-north-1:073109465421:task-definition/flower-classifier-task-definition:11",
   "family": "flower-classifier-task-definition",
   "requiresAttributes": [
     {
@@ -79,7 +79,7 @@
   "networkMode": null,
   "runtimePlatform": null,
   "cpu": null,
-  "revision": 1,
+  "revision": 11,
   "status": "ACTIVE",
   "inferenceAccelerators": null,
   "proxyConfiguration": null,
