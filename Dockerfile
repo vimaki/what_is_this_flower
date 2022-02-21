@@ -16,4 +16,4 @@ RUN pip --no-cache-dir install -r web_app_requirements.txt
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app", "-w", "2"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app", "-w", "1"]
