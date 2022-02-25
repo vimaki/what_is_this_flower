@@ -18,7 +18,7 @@ load_dataset.py
     stores images and their labels.
 """
 
-from typing import Callable
+from typing import Callable, List, Tuple
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -27,9 +27,13 @@ import torch
 from optuna.trial import TrialState
 from torch.utils.data import DataLoader
 from tqdm import tqdm_notebook
-from typing import List, Tuple
 
 from .load_dataset import MyDataset
+
+__all__ = ['find_init_lr',
+           'plot_lr_loss',
+           'plot_tuning_result',
+           'run_tuning']
 
 
 def find_init_lr(model, train_dataset: MyDataset, loss_func, optimizer,

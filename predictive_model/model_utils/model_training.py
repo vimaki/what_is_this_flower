@@ -20,12 +20,17 @@ load_dataset.py
 """
 
 import os
+from typing import List, Optional, Tuple
+
 import torch
 from torch.utils.data import DataLoader
 from tqdm import tqdm, tqdm_notebook
-from typing import List, Optional, Tuple
 
 from .load_dataset import MyDataset
+
+__all__ = ['fit_epoch',
+           'eval_epoch',
+           'train']
 
 
 def fit_epoch(model, train_loader: DataLoader, loss_func, optimizer,

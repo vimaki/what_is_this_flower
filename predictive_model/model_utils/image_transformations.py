@@ -11,9 +11,14 @@ image_to_tensor
 """
 
 from pathlib import Path
+
 from PIL import Image
 from torch import Tensor
 from torchvision import transforms
+
+__all__ = ['load_sample',
+           'crop_image',
+           'image_to_tensor']
 
 
 def load_sample(file: Path) -> Image:

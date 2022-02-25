@@ -22,6 +22,10 @@ import ttach as tta
 
 from .load_dataset import MyDataset
 
+__all__ = ['run_tta',
+           'predict',
+           'predict_one_sample']
+
 
 def run_tta(model, inputs: torch.Tensor) -> torch.Tensor:
     """Performing a prediction with Test Time Augmentation.

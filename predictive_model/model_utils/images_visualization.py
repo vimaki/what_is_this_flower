@@ -16,14 +16,19 @@ load_dataset.py
     stores images and their labels.
 """
 
+from math import ceil
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np
-from math import ceil
 from matplotlib.font_manager import FontProperties
 from torch import Tensor
 
 from .load_dataset import MyDataset
+
+__all__ = ['imshow_tensor',
+           'show_dataset_examples',
+           'show_images_with_predictions']
 
 
 def imshow_tensor(inp: Tensor, title: bool = None, plt_ax=plt) -> None:
