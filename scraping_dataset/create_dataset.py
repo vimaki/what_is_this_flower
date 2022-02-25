@@ -22,6 +22,7 @@ flower_types.json
     corresponding translations into Russian.
 """
 
+import argparse
 import json
 import logging
 import os
@@ -118,15 +119,20 @@ def download_images(flower_type: str, n_images: int = 100) -> None:
                 continue
 
 
-def main() -> None:
+def main(args) -> None:
+    parser = argparse.ArgumentParser(description='Downloads a dataset consisting of images')
+    parser.add_argument('-n', '--n_images', type=int, default=100,
+                        help='The number of images to download')
+    args = parser.parse_args(args)
+
     with open('flower_types.json', 'r') as file_flower_types:
         flower_types = json.load(file_flower_types)
         for flower_type in flower_types:
             # If a folder with this type of flower exists,
             # you don't need to download it again
             if not Path(f'dataset/{flower_type}').exists():
-                download_images(flower_type, 400)
+                download_images(flower_type, args.n_images)
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1:])
