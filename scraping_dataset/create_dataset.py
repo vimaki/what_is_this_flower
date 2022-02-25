@@ -25,13 +25,16 @@ flower_types.json
 import json
 import logging
 import os
-import requests
 import sys
-from fake_useragent import UserAgent
 from pathlib import Path
 from typing import List
 
+import requests
+from fake_useragent import UserAgent
+
 from . import image_scraper
+
+__all__ = ['get_image_urls', 'download_images']
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 logger = logging.getLogger()

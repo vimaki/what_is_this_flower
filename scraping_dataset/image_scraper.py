@@ -19,12 +19,14 @@ import argparse
 import logging
 import sys
 import urllib.parse
+from typing import List
+
 from retry import retry
 from selenium import webdriver
 from selenium.common import exceptions as sel_e
 from selenium.webdriver.remote.webdriver import WebDriver
-from typing import List
 
+__all__ = ['Scraper']
 
 logging.basicConfig(stream=sys.stderr, level=logging.INFO)
 logger = logging.getLogger()
